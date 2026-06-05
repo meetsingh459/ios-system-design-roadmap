@@ -26,9 +26,9 @@
     -webkit-font-smoothing:antialiased; min-height:100vh;
   }
   .wrap{max-width:880px;margin:0 auto;padding:0 20px 80px}
-
-  /* Header */
-  header{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,var(--bg) 70%,rgba(11,13,18,.0));padding:26px 0 16px;margin-bottom:8px}
+  .hidden{display:none !important}
+  a{color:#4ea8ff}
+  header{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,var(--bg) 70%,rgba(11,13,18,0));padding:26px 0 16px;margin-bottom:8px}
   .kicker{font-size:11px;letter-spacing:.32em;color:var(--faint);text-transform:uppercase}
   h1{font-family:var(--disp);font-weight:800;font-size:clamp(34px,6vw,62px);line-height:.92;margin:6px 0 2px;letter-spacing:.01em}
   h1 .num{color:#38e1c9}
@@ -39,63 +39,72 @@
   .stat{font-size:12.5px;color:var(--mut)}
   .stat b{color:var(--ink);font-weight:600}
   .ctrls{display:flex;gap:6px;flex-wrap:wrap}
-  .btn{font-family:var(--mono);font-size:11.5px;color:var(--mut);background:var(--surface);border:1px solid var(--line);
-       padding:6px 11px;border-radius:8px;cursor:pointer;transition:.18s}
+  .btn{font-family:var(--mono);font-size:11.5px;color:var(--mut);background:var(--surface);border:1px solid var(--line);padding:6px 11px;border-radius:8px;cursor:pointer;transition:.18s;text-decoration:none;display:inline-block}
   .btn:hover{color:var(--ink);border-color:var(--rail)}
   .btn.on{color:#0b0d12;background:#38e1c9;border-color:#38e1c9;font-weight:600}
   .seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
   .seg .btn{border:0;border-radius:0;border-right:1px solid var(--line)}
   .seg .btn:last-child{border-right:0}
-
-  /* Phase / station */
   .phase{display:flex;gap:16px;position:relative}
   .rail{width:40px;flex:0 0 40px;position:relative}
   .rail::before{content:"";position:absolute;left:19px;top:0;bottom:0;width:2px;background:var(--rail)}
   .phase:first-of-type .rail::before{top:26px}
   .phase:last-of-type .rail::before{bottom:auto;height:30px}
-  .station{position:absolute;left:8px;top:14px;width:24px;height:24px;border-radius:50%;
-    background:var(--bg);display:grid;place-items:center;z-index:2;
-    box-shadow:0 0 0 2px var(--rail)}
+  .station{position:absolute;left:8px;top:14px;width:24px;height:24px;border-radius:50%;background:var(--bg);display:grid;place-items:center;z-index:2;box-shadow:0 0 0 2px var(--rail)}
   .station::after{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--pc)}
-
   .body{flex:1;min-width:0;padding-bottom:14px}
   .phead{display:flex;align-items:center;gap:12px;cursor:pointer;padding:10px 0;user-select:none}
   .pname{font-family:var(--disp);font-weight:600;font-size:clamp(20px,3.4vw,28px);letter-spacing:.02em;line-height:1;color:var(--ink)}
   .pname .idx{color:var(--pc);margin-right:8px}
-  .ring{margin-left:auto;width:34px;height:34px;border-radius:50%;flex:0 0 34px;
-    background:conic-gradient(var(--pc) var(--deg,0deg), var(--surface2) 0deg);
-    display:grid;place-items:center;transition:.4s}
-  .ring i{width:26px;height:26px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;
-    font-size:10px;color:var(--mut);font-style:normal}
+  .ring{margin-left:auto;width:34px;height:34px;border-radius:50%;flex:0 0 34px;background:conic-gradient(var(--pc) var(--deg,0deg), var(--surface2) 0deg);display:grid;place-items:center;transition:.4s}
+  .ring i{width:26px;height:26px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;font-size:10px;color:var(--mut);font-style:normal}
   .chev{flex:0 0 14px;color:var(--faint);transition:transform .25s;font-size:12px}
   .phase.collapsed .chev{transform:rotate(-90deg)}
-  .pcount{font-size:11px;color:var(--faint)}
-
   .stops{overflow:hidden;transition:max-height .3s ease,opacity .25s;margin-left:4px;padding-left:18px;position:relative}
   .stops::before{content:"";position:absolute;left:5px;top:2px;bottom:8px;width:1px;background:var(--line)}
   .phase.collapsed .stops{max-height:0 !important;opacity:0}
-  .stop{display:flex;align-items:flex-start;gap:11px;padding:7px 10px 7px 12px;border-radius:9px;cursor:pointer;
-    position:relative;transition:background .15s;border:1px solid transparent}
-  .stop::before{content:"";position:absolute;left:-15px;top:14px;width:9px;height:9px;border-radius:50%;
-    background:var(--bg);box-shadow:0 0 0 2px var(--rail);transition:.18s}
+  .stop{display:flex;align-items:flex-start;gap:11px;padding:7px 10px 7px 12px;border-radius:9px;cursor:pointer;position:relative;transition:background .15s;border:1px solid transparent}
+  .stop::before{content:"";position:absolute;left:-15px;top:14px;width:9px;height:9px;border-radius:50%;background:var(--bg);box-shadow:0 0 0 2px var(--rail);transition:.18s}
   .stop:hover{background:var(--surface)}
+  .stop:hover .tname{color:#fff}
   .stepno{font-size:10.5px;color:var(--faint);min-width:26px;padding-top:1px}
   .tname{font-size:13.5px;color:var(--ink);flex:1}
-  .check{flex:0 0 16px;width:16px;height:16px;border-radius:5px;border:1.5px solid var(--rail);margin-top:1px;
-    display:grid;place-items:center;transition:.18s}
+  .ready{font-size:9px;letter-spacing:.1em;color:var(--pc);border:1px solid var(--pc);border-radius:4px;padding:1px 5px;margin-left:6px;opacity:.85}
+  .check{flex:0 0 18px;width:18px;height:18px;border-radius:5px;border:1.5px solid var(--rail);display:grid;place-items:center;transition:.18s;cursor:pointer}
+  .check:hover{border-color:var(--pc)}
   .check svg{width:10px;height:10px;opacity:0;transform:scale(.5);transition:.18s}
-
-  .stop.done::before{background:var(--pc);box-shadow:0 0 0 2px var(--pc);}
+  .stop.done::before{background:var(--pc);box-shadow:0 0 0 2px var(--pc)}
   .stop.done .tname{color:var(--faint);text-decoration:line-through;text-decoration-color:var(--rail)}
   .stop.done .check{background:var(--pc);border-color:var(--pc)}
   .stop.done .check svg{opacity:1;transform:scale(1)}
   .stop.done .stepno{color:var(--rail)}
-
   .hide{display:none !important}
-
   footer{margin-top:34px;padding-left:56px;color:var(--faint);font-size:11.5px;line-height:1.7}
   footer b{color:var(--mut);font-weight:600}
-  .legend{display:flex;align-items:center;gap:8px;margin-top:6px;color:var(--faint);font-size:11px}
+  .dwrap{padding-top:24px}
+  .dtop{display:flex;align-items:center;gap:10px;margin-bottom:22px;flex-wrap:wrap}
+  .ptag{font-size:11px;letter-spacing:.06em;padding:4px 10px;border-radius:20px;font-weight:600;color:var(--dc);border:1px solid var(--dc);background:color-mix(in srgb,var(--dc) 12%,transparent)}
+  .dstep{font-size:11px;color:var(--faint)}
+  .dtitle{font-family:var(--disp);font-weight:800;font-size:clamp(30px,5.5vw,52px);line-height:.95;margin:4px 0 26px}
+  .section{margin:0 0 28px}
+  .section h3{font-family:var(--disp);font-weight:600;font-size:20px;letter-spacing:.02em;color:var(--dc);margin:0 0 10px;padding-bottom:7px;border-bottom:1px solid var(--line)}
+  .section p{font-size:14.5px;color:#d6dae6;margin:0 0 13px;line-height:1.72}
+  .section p:last-child{margin-bottom:0}
+  .section code{background:var(--surface2);padding:1px 6px;border-radius:5px;font-size:13px;color:#9be1c9}
+  .section strong{color:#fff;font-weight:600}
+  .callout{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--dc);border-radius:0 10px 10px 0;padding:14px 16px;font-size:13.5px;color:#d6dae6}
+  .callout b{color:var(--dc)}
+  .reslist{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+  .resitem{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;transition:.15s}
+  .resitem:hover{border-color:var(--rail)}
+  .resitem a{font-size:14px;font-weight:500;text-decoration:none}
+  .resitem a:hover{text-decoration:underline}
+  .resnote{font-size:12px;color:var(--mut);margin-top:3px}
+  .placeholder{background:var(--surface);border:1px dashed var(--rail);border-radius:14px;padding:32px;text-align:center;color:var(--mut);font-size:14px}
+  .placeholder b{color:var(--ink);font-weight:600}
+  .dnav{display:flex;align-items:center;gap:10px;margin-top:34px;flex-wrap:wrap}
+  .dnav .grow{flex:1}
+  .markbtn.done{background:var(--dc);border-color:var(--dc);color:#0b0d12;font-weight:600}
   @media(max-width:560px){
     .rail{width:30px;flex-basis:30px} .rail::before{left:14px} .station{left:3px}
     .stops{padding-left:16px} footer{padding-left:30px}
@@ -104,33 +113,36 @@
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div class="kicker">Mobile Engineer · SDE 2 / SDE 3 Prep</div>
-    <h1>iOS System Design <span class="num">0&rarr;100</span></h1>
-    <div class="sub">A granular journey — learn each stop, then assemble the whole system. Tap a stop to mark it cleared.</div>
-    <div class="bar"><i id="globalbar"></i></div>
-    <div class="meta">
-      <div class="stat"><b id="donecount">0</b> / 132 stops cleared &nbsp;·&nbsp; <b id="pct">0%</b></div>
-      <div class="ctrls">
-        <div class="seg" id="filters">
-          <button class="btn on" data-f="all">All</button>
-          <button class="btn" data-f="todo">Remaining</button>
-          <button class="btn" data-f="done">Done</button>
+  <div id="view-roadmap">
+    <header>
+      <div class="kicker">Mobile Engineer · SDE 2 / SDE 3 Prep</div>
+      <h1>iOS System Design <span class="num">0&rarr;100</span></h1>
+      <div class="sub">Tap a stop to open its deep-dive page. Tap the box on the right to mark it cleared.</div>
+      <div class="bar"><i id="globalbar"></i></div>
+      <div class="meta">
+        <div class="stat"><b id="donecount">0</b> / 132 stops cleared &nbsp;·&nbsp; <b id="pct">0%</b></div>
+        <div class="ctrls">
+          <div class="seg" id="filters">
+            <button class="btn on" data-f="all">All</button>
+            <button class="btn" data-f="todo">Remaining</button>
+            <button class="btn" data-f="done">Done</button>
+          </div>
+          <button class="btn" id="expandAll">Expand</button>
+          <button class="btn" id="collapseAll">Collapse</button>
+          <button class="btn" id="reset">Reset</button>
         </div>
-        <button class="btn" id="expandAll">Expand</button>
-        <button class="btn" id="collapseAll">Collapse</button>
-        <button class="btn" id="reset">Reset</button>
       </div>
-    </div>
-  </header>
-  <main id="road"></main>
-  <footer>
-    <div><b>How to use:</b> work top to bottom — the order builds on itself. For each stop, learn it well enough to say what problem it solves and one tradeoff.</div>
-    <div>The eight <b>HLD design problems</b> sit deliberately after the fundamentals, so by then you have the pieces to assemble a whole system.</div>
-    <div class="legend">Progress saves automatically in this browser.</div>
-  </footer>
+    </header>
+    <main id="road"></main>
+    <footer>
+      <div><b>How to use:</b> work top to bottom — the order builds on itself. Click any stop to read its concept, real-life example, interview angle, and curated resources.</div>
+      <div>The eight <b>HLD design problems</b> (93&ndash;100) sit after the fundamentals on purpose, so you reach them with the pieces in hand.</div>
+    </footer>
+  </div>
+  <div id="view-topic" class="hidden"></div>
 </div>
 
+<script src="topics.js"></script>
 <script>
 const PHASES = [
   {name:"Foundations", c:"#38e1c9", t:[
@@ -193,123 +205,137 @@ const PHASES = [
     "Behavioral prep (STAR, Amazon LPs)"]},
 ];
 
+const CONTENT = (typeof window !== "undefined" && window.TOPICS) ? window.TOPICS : {};
+
 const KEY="ios_sysdesign_roadmap_v1";
 let done = new Set();
 let filter = "all";
+const STEPS = [];
 const tick = '<svg viewBox="0 0 12 12"><path d="M2 6.5L4.8 9L10 3" fill="none" stroke="#0b0d12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-function load(){
-  try{ const r=localStorage.getItem(KEY); if(r) done=new Set(JSON.parse(r)); }catch(e){}
-}
-function save(){
-  try{ localStorage.setItem(KEY, JSON.stringify([...done])); }catch(e){}
-}
+function load(){ try{ const r=localStorage.getItem(KEY); if(r) done=new Set(JSON.parse(r)); }catch(e){} }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify([...done])); }catch(e){} }
+(function(){ let s=0; PHASES.forEach((p,pi)=>p.t.forEach(name=>{ s++; STEPS.push({step:s,name,pi,pname:p.name,c:p.c}); })); })();
 
 const road = document.getElementById("road");
 const phaseRefs = [];
-
-function build(){
+function buildRoadmap(){
   let step = 0;
   PHASES.forEach((p, pi)=>{
     const phase = document.createElement("div");
-    phase.className = "phase";
-    phase.style.setProperty("--pc", p.c);
-
-    const rail = document.createElement("div");
-    rail.className = "rail";
-    rail.innerHTML = '<div class="station"></div>';
-
-    const body = document.createElement("div");
-    body.className = "body";
-
-    const head = document.createElement("div");
-    head.className = "phead";
-    head.innerHTML =
-      '<span class="chev">&#9660;</span>'+
-      '<span class="pname"><span class="idx">'+String(pi+1).padStart(2,"0")+'</span>'+p.name+'</span>'+
-      '<span class="ring"><i></i></span>';
+    phase.className = "phase"; phase.style.setProperty("--pc", p.c);
+    const rail = document.createElement("div"); rail.className = "rail"; rail.innerHTML='<div class="station"></div>';
+    const body = document.createElement("div"); body.className = "body";
+    const head = document.createElement("div"); head.className = "phead";
+    head.innerHTML='<span class="chev">&#9660;</span><span class="pname"><span class="idx">'+String(pi+1).padStart(2,"0")+'</span>'+p.name+'</span><span class="ring"><i></i></span>';
     head.addEventListener("click", ()=> phase.classList.toggle("collapsed"));
-
-    const stops = document.createElement("div");
-    stops.className = "stops";
-
-    const stepEls = [];
+    const stops = document.createElement("div"); stops.className="stops";
+    const stepEls=[];
     p.t.forEach(name=>{
-      step++;
-      const s = step;
-      const row = document.createElement("div");
-      row.className = "stop" + (done.has(s) ? " done" : "");
-      row.dataset.step = s;
-      row.innerHTML =
-        '<span class="stepno">'+String(s).padStart(3,"0")+'</span>'+
-        '<span class="tname">'+name+'</span>'+
-        '<span class="check">'+tick+'</span>';
-      row.addEventListener("click", ()=> toggle(s, row));
-      stops.appendChild(row);
-      stepEls.push({s,row});
+      step++; const s=step; const hasContent = !!CONTENT[s];
+      const row=document.createElement("div");
+      row.className="stop"+(done.has(s)?" done":""); row.dataset.step=s;
+      row.innerHTML='<span class="stepno">'+String(s).padStart(3,"0")+'</span>'+
+        '<span class="tname">'+name+(hasContent?'<span class="ready">READ</span>':'')+'</span>'+
+        '<span class="check" title="Mark cleared">'+tick+'</span>';
+      row.addEventListener("click", ()=> { location.hash = "#/t/"+s; });
+      row.querySelector(".check").addEventListener("click", (e)=>{ e.stopPropagation(); toggle(s,row); });
+      stops.appendChild(row); stepEls.push({s,row});
     });
-
-    body.appendChild(head);
-    body.appendChild(stops);
-    phase.appendChild(rail);
-    phase.appendChild(body);
-    road.appendChild(phase);
-
-    const ring = head.querySelector(".ring");
-    phaseRefs.push({steps:stepEls, ring, ringTxt:ring.querySelector("i"), stops, c:p.c});
-    // open by default
-    stops.style.maxHeight = "9999px";
+    body.appendChild(head); body.appendChild(stops);
+    phase.appendChild(rail); phase.appendChild(body); road.appendChild(phase);
+    const ring=head.querySelector(".ring");
+    phaseRefs.push({steps:stepEls, ring, ringTxt:ring.querySelector("i")});
+    stops.style.maxHeight="9999px";
   });
 }
-
 function toggle(s, row){
   if(done.has(s)) done.delete(s); else done.add(s);
-  row.classList.toggle("done");
-  applyFilterToRow(row);
-  updateStats();
-  save();
+  if(row) row.classList.toggle("done");
+  applyFilterToRow(row); updateStats(); save();
 }
-
 function updateStats(){
-  document.getElementById("donecount").textContent = done.size;
-  const pct = Math.round(done.size/132*100);
-  document.getElementById("pct").textContent = pct+"%";
-  document.getElementById("globalbar").style.width = pct+"%";
+  document.getElementById("donecount").textContent=done.size;
+  const pct=Math.round(done.size/132*100);
+  document.getElementById("pct").textContent=pct+"%";
+  document.getElementById("globalbar").style.width=pct+"%";
   phaseRefs.forEach(pr=>{
-    const total = pr.steps.length;
-    const d = pr.steps.filter(x=>done.has(x.s)).length;
-    pr.ring.style.setProperty("--deg", (d/total*360)+"deg");
-    pr.ringTxt.textContent = d+"/"+total;
+    const total=pr.steps.length, d=pr.steps.filter(x=>done.has(x.s)).length;
+    pr.ring.style.setProperty("--deg",(d/total*360)+"deg");
+    pr.ringTxt.textContent=d+"/"+total;
   });
 }
-
 function applyFilterToRow(row){
-  const isDone = row.classList.contains("done");
-  const show = filter==="all" || (filter==="done"&&isDone) || (filter==="todo"&&!isDone);
-  row.classList.toggle("hide", !show);
+  if(!row) return;
+  const isDone=row.classList.contains("done");
+  const show=filter==="all"||(filter==="done"&&isDone)||(filter==="todo"&&!isDone);
+  row.classList.toggle("hide",!show);
 }
 function applyFilter(){ document.querySelectorAll(".stop").forEach(applyFilterToRow); }
-
-document.getElementById("filters").addEventListener("click", e=>{
-  const b = e.target.closest(".btn"); if(!b) return;
-  filter = b.dataset.f;
-  document.querySelectorAll("#filters .btn").forEach(x=>x.classList.toggle("on", x===b));
-  applyFilter();
+document.getElementById("filters").addEventListener("click",e=>{
+  const b=e.target.closest(".btn"); if(!b) return; filter=b.dataset.f;
+  document.querySelectorAll("#filters .btn").forEach(x=>x.classList.toggle("on",x===b)); applyFilter();
 });
-document.getElementById("expandAll").addEventListener("click", ()=>
-  document.querySelectorAll(".phase").forEach(p=>p.classList.remove("collapsed")));
-document.getElementById("collapseAll").addEventListener("click", ()=>
-  document.querySelectorAll(".phase").forEach(p=>p.classList.add("collapsed")));
-document.getElementById("reset").addEventListener("click", ()=>{
-  if(!confirm("Clear all progress?")) return;
-  done.clear();
+document.getElementById("expandAll").addEventListener("click",()=>document.querySelectorAll(".phase").forEach(p=>p.classList.remove("collapsed")));
+document.getElementById("collapseAll").addEventListener("click",()=>document.querySelectorAll(".phase").forEach(p=>p.classList.add("collapsed")));
+document.getElementById("reset").addEventListener("click",()=>{
+  if(!confirm("Clear all progress?")) return; done.clear();
   document.querySelectorAll(".stop").forEach(r=>{r.classList.remove("done"); applyFilterToRow(r);});
   updateStats(); save();
 });
 
-load();
-build();
-updateStats();
+const vRoad=document.getElementById("view-roadmap");
+const vTopic=document.getElementById("view-topic");
+function sectionHTML(title, paras){
+  if(!paras) return "";
+  return '<div class="section"><h3>'+title+'</h3>'+paras.map(p=>'<p>'+p+'</p>').join("")+'</div>';
+}
+function showTopic(n){
+  const s=STEPS[n-1]; if(!s){ showRoadmap(); return; }
+  const c=CONTENT[n];
+  let html='<div class="dwrap" style="--dc:'+s.c+'">';
+  html+='<div class="dtop"><span class="ptag">'+s.pname+'</span><span class="dstep">Step '+String(n).padStart(3,"0")+' / 132</span></div>';
+  html+='<div class="dtitle">'+s.name+'</div>';
+  if(c){
+    html+=sectionHTML("The concept, in depth", c.concept);
+    html+=sectionHTML("Why it exists / where it fits", c.why);
+    html+=sectionHTML("Real-life example (iOS)", c.example);
+    html+=sectionHTML("Interview lens", c.interview);
+    if(c.resources){
+      html+='<div class="section"><h3>Resources</h3><ul class="reslist">'+
+        c.resources.map(r=>'<li class="resitem"><a href="'+r.url+'" target="_blank" rel="noopener">'+r.label+'</a>'+(r.note?'<div class="resnote">'+r.note+'</div>':'')+'</li>').join("")+
+        '</ul></div>';
+    }
+    if(c.oneliner){ html+='<div class="callout"><b>Tracker one-liner:</b> '+c.oneliner+'</div>'; }
+  } else {
+    html+='<div class="placeholder"><b>Deep dive coming soon.</b><br>This page will hold the concept, why it matters, a real-life iOS example, the interview angle, and curated blogs / videos / docs — same format as Step 001.</div>';
+  }
+  html+='<div class="dnav">';
+  html+='<a class="btn" href="#/">&larr; Roadmap</a>';
+  html+=(n>1?'<a class="btn" href="#/t/'+(n-1)+'">Prev</a>':'');
+  html+=(n<132?'<a class="btn" href="#/t/'+(n+1)+'">Next</a>':'');
+  html+='<span class="grow"></span>';
+  html+='<button class="btn markbtn'+(done.has(n)?' done':'')+'" id="markbtn">'+(done.has(n)?'Cleared \u2713':'Mark cleared')+'</button>';
+  html+='</div></div>';
+  vTopic.innerHTML=html;
+  const mb=document.getElementById("markbtn");
+  mb.addEventListener("click",()=>{
+    const row=document.querySelector('.stop[data-step="'+n+'"]');
+    toggle(n,row);
+    mb.classList.toggle("done", done.has(n));
+    mb.textContent = done.has(n) ? "Cleared \u2713" : "Mark cleared";
+  });
+  vRoad.classList.add("hidden"); vTopic.classList.remove("hidden");
+  window.scrollTo(0,0);
+}
+function showRoadmap(){ vTopic.classList.add("hidden"); vRoad.classList.remove("hidden"); }
+function router(){
+  const m=location.hash.match(/^#\/t\/(\d+)/);
+  if(m) showTopic(parseInt(m[1],10)); else showRoadmap();
+}
+window.addEventListener("hashchange", router);
+
+load(); buildRoadmap(); updateStats(); router();
 </script>
 </body>
 </html>
