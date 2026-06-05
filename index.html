@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iOS System Design Roadmap · 0 → 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;600;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0d12; --bg2:#11141c; --surface:#161a24; --surface2:#1c2230;
+    --ink:#eef1f7; --mut:#8b93a7; --faint:#5b647a;
+    --line:#2a3142; --rail:#333c52;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --disp:"Big Shoulders Display",Impact,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(78,168,255,.07), transparent 60%),
+      radial-gradient(900px 500px at -10% 20%, rgba(155,123,255,.06), transparent 55%),
+      var(--bg);
+    color:var(--ink); font-family:var(--mono); line-height:1.5;
+    -webkit-font-smoothing:antialiased; min-height:100vh;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 20px 80px}
+
+  /* Header */
+  header{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,var(--bg) 70%,rgba(11,13,18,.0));padding:26px 0 16px;margin-bottom:8px}
+  .kicker{font-size:11px;letter-spacing:.32em;color:var(--faint);text-transform:uppercase}
+  h1{font-family:var(--disp);font-weight:800;font-size:clamp(34px,6vw,62px);line-height:.92;margin:6px 0 2px;letter-spacing:.01em}
+  h1 .num{color:#38e1c9}
+  .sub{color:var(--mut);font-size:13px;margin-bottom:18px}
+  .bar{height:10px;border-radius:20px;background:var(--surface2);overflow:hidden;border:1px solid var(--line)}
+  .bar > i{display:block;height:100%;width:0;border-radius:20px;background:linear-gradient(90deg,#38e1c9,#4ea8ff 45%,#9b7bff);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+  .meta{display:flex;justify-content:space-between;align-items:center;margin-top:10px;flex-wrap:wrap;gap:10px}
+  .stat{font-size:12.5px;color:var(--mut)}
+  .stat b{color:var(--ink);font-weight:600}
+  .ctrls{display:flex;gap:6px;flex-wrap:wrap}
+  .btn{font-family:var(--mono);font-size:11.5px;color:var(--mut);background:var(--surface);border:1px solid var(--line);
+       padding:6px 11px;border-radius:8px;cursor:pointer;transition:.18s}
+  .btn:hover{color:var(--ink);border-color:var(--rail)}
+  .btn.on{color:#0b0d12;background:#38e1c9;border-color:#38e1c9;font-weight:600}
+  .seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg .btn{border:0;border-radius:0;border-right:1px solid var(--line)}
+  .seg .btn:last-child{border-right:0}
+
+  /* Phase / station */
+  .phase{display:flex;gap:16px;position:relative}
+  .rail{width:40px;flex:0 0 40px;position:relative}
+  .rail::before{content:"";position:absolute;left:19px;top:0;bottom:0;width:2px;background:var(--rail)}
+  .phase:first-of-type .rail::before{top:26px}
+  .phase:last-of-type .rail::before{bottom:auto;height:30px}
+  .station{position:absolute;left:8px;top:14px;width:24px;height:24px;border-radius:50%;
+    background:var(--bg);display:grid;place-items:center;z-index:2;
+    box-shadow:0 0 0 2px var(--rail)}
+  .station::after{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--pc)}
+
+  .body{flex:1;min-width:0;padding-bottom:14px}
+  .phead{display:flex;align-items:center;gap:12px;cursor:pointer;padding:10px 0;user-select:none}
+  .pname{font-family:var(--disp);font-weight:600;font-size:clamp(20px,3.4vw,28px);letter-spacing:.02em;line-height:1;color:var(--ink)}
+  .pname .idx{color:var(--pc);margin-right:8px}
+  .ring{margin-left:auto;width:34px;height:34px;border-radius:50%;flex:0 0 34px;
+    background:conic-gradient(var(--pc) var(--deg,0deg), var(--surface2) 0deg);
+    display:grid;place-items:center;transition:.4s}
+  .ring i{width:26px;height:26px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;
+    font-size:10px;color:var(--mut);font-style:normal}
+  .chev{flex:0 0 14px;color:var(--faint);transition:transform .25s;font-size:12px}
+  .phase.collapsed .chev{transform:rotate(-90deg)}
+  .pcount{font-size:11px;color:var(--faint)}
+
+  .stops{overflow:hidden;transition:max-height .3s ease,opacity .25s;margin-left:4px;padding-left:18px;position:relative}
+  .stops::before{content:"";position:absolute;left:5px;top:2px;bottom:8px;width:1px;background:var(--line)}
+  .phase.collapsed .stops{max-height:0 !important;opacity:0}
+  .stop{display:flex;align-items:flex-start;gap:11px;padding:7px 10px 7px 12px;border-radius:9px;cursor:pointer;
+    position:relative;transition:background .15s;border:1px solid transparent}
+  .stop::before{content:"";position:absolute;left:-15px;top:14px;width:9px;height:9px;border-radius:50%;
+    background:var(--bg);box-shadow:0 0 0 2px var(--rail);transition:.18s}
+  .stop:hover{background:var(--surface)}
+  .stepno{font-size:10.5px;color:var(--faint);min-width:26px;padding-top:1px}
+  .tname{font-size:13.5px;color:var(--ink);flex:1}
+  .check{flex:0 0 16px;width:16px;height:16px;border-radius:5px;border:1.5px solid var(--rail);margin-top:1px;
+    display:grid;place-items:center;transition:.18s}
+  .check svg{width:10px;height:10px;opacity:0;transform:scale(.5);transition:.18s}
+
+  .stop.done::before{background:var(--pc);box-shadow:0 0 0 2px var(--pc);}
+  .stop.done .tname{color:var(--faint);text-decoration:line-through;text-decoration-color:var(--rail)}
+  .stop.done .check{background:var(--pc);border-color:var(--pc)}
+  .stop.done .check svg{opacity:1;transform:scale(1)}
+  .stop.done .stepno{color:var(--rail)}
+
+  .hide{display:none !important}
+
+  footer{margin-top:34px;padding-left:56px;color:var(--faint);font-size:11.5px;line-height:1.7}
+  footer b{color:var(--mut);font-weight:600}
+  .legend{display:flex;align-items:center;gap:8px;margin-top:6px;color:var(--faint);font-size:11px}
+  @media(max-width:560px){
+    .rail{width:30px;flex-basis:30px} .rail::before{left:14px} .station{left:3px}
+    .stops{padding-left:16px} footer{padding-left:30px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Mobile Engineer · SDE 2 / SDE 3 Prep</div>
+    <h1>iOS System Design <span class="num">0&rarr;100</span></h1>
+    <div class="sub">A granular journey — learn each stop, then assemble the whole system. Tap a stop to mark it cleared.</div>
+    <div class="bar"><i id="globalbar"></i></div>
+    <div class="meta">
+      <div class="stat"><b id="donecount">0</b> / 132 stops cleared &nbsp;·&nbsp; <b id="pct">0%</b></div>
+      <div class="ctrls">
+        <div class="seg" id="filters">
+          <button class="btn on" data-f="all">All</button>
+          <button class="btn" data-f="todo">Remaining</button>
+          <button class="btn" data-f="done">Done</button>
+        </div>
+        <button class="btn" id="expandAll">Expand</button>
+        <button class="btn" id="collapseAll">Collapse</button>
+        <button class="btn" id="reset">Reset</button>
+      </div>
+    </div>
+  </header>
+  <main id="road"></main>
+  <footer>
+    <div><b>How to use:</b> work top to bottom — the order builds on itself. For each stop, learn it well enough to say what problem it solves and one tradeoff.</div>
+    <div>The eight <b>HLD design problems</b> sit deliberately after the fundamentals, so by then you have the pieces to assemble a whole system.</div>
+    <div class="legend">Progress saves automatically in this browser.</div>
+  </footer>
+</div>
+
+<script>
+const PHASES = [
+  {name:"Foundations", c:"#38e1c9", t:[
+    "Client-server architecture","HTTP request-response lifecycle","DNS resolution basics",
+    "TLS / HTTPS handshake basics","Latency vs bandwidth vs throughput","Stateless vs stateful servers",
+    "Load balancer","CDN (content delivery network)","Object / blob storage (Amazon S3)",
+    "Caching fundamentals","Push notification service / APNs"]},
+  {name:"Networking & APIs", c:"#4ea8ff", t:[
+    "HTTP methods (GET, POST, PUT, PATCH, DELETE)","HTTP status codes","HTTP headers",
+    "REST API design principles","JSON serialization / Codable (Swift)","API versioning",
+    "API error handling & response design","GraphQL basics","gRPC and Protocol Buffers basics",
+    "Pagination: offset vs cursor","OAuth 2.0 authentication","JWT (JSON Web Tokens)",
+    "Access tokens vs refresh tokens","Secure token storage (iOS Keychain)",
+    "URLSession and async/await networking","Network request routing / API client design",
+    "Retry strategies & exponential backoff with jitter","Request timeouts and cancellation",
+    "Circuit breaker pattern","HTTP caching: Cache-Control and ETag","Conditional requests (304 Not Modified)",
+    "Multipart and resumable file uploads","Background URLSession","Debouncing and throttling",
+    "Network reachability (NWPathMonitor)","Payload compression (gzip)"]},
+  {name:"Local Data & Persistence", c:"#9b7bff", t:[
+    "iOS persistence options overview","Core Data fundamentals","SQLite on iOS","Realm database","SwiftData",
+    "Database schema migration / versioning","In-memory caching (NSCache)","Disk caching strategy",
+    "LRU cache (least recently used)","Cache invalidation strategies (TTL, versioning)",
+    "Data encryption at rest / file protection","Biometric authentication (Face ID / Touch ID)"]},
+  {name:"App Architecture & Patterns", c:"#ff6fcf", t:[
+    "Separation of concerns / layered architecture","Dependency rule / Clean Architecture",
+    "MVC (Model-View-Controller)","MVVM (Model-View-ViewModel)","MVP (Model-View-Presenter)",
+    "VIPER architecture","VIP / Clean Swift","The Composable Architecture (TCA)",
+    "Use cases / interactors (domain layer)","Repository pattern","DTO and model mapping",
+    "Dependency injection","Coordinator pattern (navigation)","Unidirectional data flow / Redux pattern",
+    "SOLID principles","Protocol-oriented programming (Swift)","App modularization / Swift Package Manager"]},
+  {name:"Concurrency & Performance", c:"#ff7a59", t:[
+    "Grand Central Dispatch (GCD)","OperationQueue","Swift async/await & structured concurrency",
+    "Actors and Sendable","Thread safety and data races","Main thread / UI thread rules",
+    "App launch time optimization","Scroll performance & 60/120fps rendering","ARC and memory management",
+    "Retain cycles, weak & unowned references","Responding to memory warnings","Image decoding and downsampling",
+    "Collection view prefetching / lazy loading","Battery and energy efficiency","Profiling with Instruments"]},
+  {name:"Real-time & Sync", c:"#ffc24b", t:[
+    "Polling vs long-polling","Server-Sent Events (SSE)","WebSockets","Silent / background push notifications",
+    "Offline-first architecture","Data synchronization / sync engine","Conflict resolution: last-write-wins",
+    "Vector clocks","CRDTs (conflict-free replicated data types)","Outbox pattern","Idempotency keys"]},
+  {name:"Core HLD Problems", c:"#9be15d", t:[
+    "Design a news feed / timeline","Design a chat / messaging app","Design photo / video upload",
+    "Design media streaming & adaptive bitrate (HLS)","Design offline notes / file sync (Drive)",
+    "Design live location tracking (Uber)","Design search typeahead / autocomplete","Design a notifications system"]},
+  {name:"Cross-cutting / Non-functional", c:"#4fd1b0", t:[
+    "TLS certificate pinning","OWASP Mobile Top 10","App privacy / App Tracking Transparency (ATT)",
+    "Analytics SDK design (batching, flush)","Crash reporting and observability","Distributed tracing (client + server)",
+    "Feature flags and remote config","A/B testing","Graceful degradation / error resilience",
+    "Testing: unit, integration, UI, snapshot","CI/CD for iOS (TestFlight, signing, phased rollout)",
+    "API backward compatibility & deprecation","Deep linking and universal links",
+    "Accessibility (VoiceOver, Dynamic Type)","Internationalization / localization"]},
+  {name:"Advanced / SDE3", c:"#6b7cff", t:[
+    "Large-scale app architecture / modular monorepo","Backend-for-Frontend (BFF) pattern",
+    "Background tasks (BGTaskScheduler, fetch)","State restoration / app lifecycle","SDK / library design",
+    "Cross-platform tradeoffs (RN, Flutter, KMM)","Architecture migration strategies"]},
+  {name:"LLD & Interview Craft", c:"#ff5d73", t:[
+    "Design patterns (Strategy, Factory, Observer\u2026)","LLD: image loading library","LLD: network layer",
+    "LLD: LRU cache implementation","LLD: analytics SDK","LLD: file download manager",
+    "LLD: rate limiter / debouncer","System design interview framework","SDE2 vs SDE3 expectations",
+    "Behavioral prep (STAR, Amazon LPs)"]},
+];
+
+const KEY="ios_sysdesign_roadmap_v1";
+let done = new Set();
+let filter = "all";
+const tick = '<svg viewBox="0 0 12 12"><path d="M2 6.5L4.8 9L10 3" fill="none" stroke="#0b0d12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+function load(){
+  try{ const r=localStorage.getItem(KEY); if(r) done=new Set(JSON.parse(r)); }catch(e){}
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify([...done])); }catch(e){}
+}
+
+const road = document.getElementById("road");
+const phaseRefs = [];
+
+function build(){
+  let step = 0;
+  PHASES.forEach((p, pi)=>{
+    const phase = document.createElement("div");
+    phase.className = "phase";
+    phase.style.setProperty("--pc", p.c);
+
+    const rail = document.createElement("div");
+    rail.className = "rail";
+    rail.innerHTML = '<div class="station"></div>';
+
+    const body = document.createElement("div");
+    body.className = "body";
+
+    const head = document.createElement("div");
+    head.className = "phead";
+    head.innerHTML =
+      '<span class="chev">&#9660;</span>'+
+      '<span class="pname"><span class="idx">'+String(pi+1).padStart(2,"0")+'</span>'+p.name+'</span>'+
+      '<span class="ring"><i></i></span>';
+    head.addEventListener("click", ()=> phase.classList.toggle("collapsed"));
+
+    const stops = document.createElement("div");
+    stops.className = "stops";
+
+    const stepEls = [];
+    p.t.forEach(name=>{
+      step++;
+      const s = step;
+      const row = document.createElement("div");
+      row.className = "stop" + (done.has(s) ? " done" : "");
+      row.dataset.step = s;
+      row.innerHTML =
+        '<span class="stepno">'+String(s).padStart(3,"0")+'</span>'+
+        '<span class="tname">'+name+'</span>'+
+        '<span class="check">'+tick+'</span>';
+      row.addEventListener("click", ()=> toggle(s, row));
+      stops.appendChild(row);
+      stepEls.push({s,row});
+    });
+
+    body.appendChild(head);
+    body.appendChild(stops);
+    phase.appendChild(rail);
+    phase.appendChild(body);
+    road.appendChild(phase);
+
+    const ring = head.querySelector(".ring");
+    phaseRefs.push({steps:stepEls, ring, ringTxt:ring.querySelector("i"), stops, c:p.c});
+    // open by default
+    stops.style.maxHeight = "9999px";
+  });
+}
+
+function toggle(s, row){
+  if(done.has(s)) done.delete(s); else done.add(s);
+  row.classList.toggle("done");
+  applyFilterToRow(row);
+  updateStats();
+  save();
+}
+
+function updateStats(){
+  document.getElementById("donecount").textContent = done.size;
+  const pct = Math.round(done.size/132*100);
+  document.getElementById("pct").textContent = pct+"%";
+  document.getElementById("globalbar").style.width = pct+"%";
+  phaseRefs.forEach(pr=>{
+    const total = pr.steps.length;
+    const d = pr.steps.filter(x=>done.has(x.s)).length;
+    pr.ring.style.setProperty("--deg", (d/total*360)+"deg");
+    pr.ringTxt.textContent = d+"/"+total;
+  });
+}
+
+function applyFilterToRow(row){
+  const isDone = row.classList.contains("done");
+  const show = filter==="all" || (filter==="done"&&isDone) || (filter==="todo"&&!isDone);
+  row.classList.toggle("hide", !show);
+}
+function applyFilter(){ document.querySelectorAll(".stop").forEach(applyFilterToRow); }
+
+document.getElementById("filters").addEventListener("click", e=>{
+  const b = e.target.closest(".btn"); if(!b) return;
+  filter = b.dataset.f;
+  document.querySelectorAll("#filters .btn").forEach(x=>x.classList.toggle("on", x===b));
+  applyFilter();
+});
+document.getElementById("expandAll").addEventListener("click", ()=>
+  document.querySelectorAll(".phase").forEach(p=>p.classList.remove("collapsed")));
+document.getElementById("collapseAll").addEventListener("click", ()=>
+  document.querySelectorAll(".phase").forEach(p=>p.classList.add("collapsed")));
+document.getElementById("reset").addEventListener("click", ()=>{
+  if(!confirm("Clear all progress?")) return;
+  done.clear();
+  document.querySelectorAll(".stop").forEach(r=>{r.classList.remove("done"); applyFilterToRow(r);});
+  updateStats(); save();
+});
+
+load();
+build();
+updateStats();
+</script>
+</body>
+</html>
