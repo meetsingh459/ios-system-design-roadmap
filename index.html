@@ -63,7 +63,7 @@
   .stops{overflow:hidden;transition:max-height .3s ease,opacity .25s;margin-left:4px;padding-left:18px;position:relative}
   .stops::before{content:"";position:absolute;left:5px;top:2px;bottom:8px;width:1px;background:var(--line)}
   .phase.collapsed .stops{max-height:0 !important;opacity:0}
-  .stop{display:flex;align-items:flex-start;gap:11px;padding:7px 10px 7px 12px;border-radius:9px;cursor:pointer;position:relative;transition:background .15s;border:1px solid transparent}
+  .stop{display:flex;align-items:flex-start;gap:11px;padding:7px 10px 7px 12px;border-radius:9px;cursor:pointer;position:relative;transition:background .15s;border:1px solid transparent;text-decoration:none;color:inherit}
   .stop::before{content:"";position:absolute;left:-15px;top:14px;width:9px;height:9px;border-radius:50%;background:var(--bg);box-shadow:0 0 0 2px var(--rail);transition:.18s}
   .stop:hover{background:var(--surface)}
   .stop:hover .tname{color:#fff}
@@ -233,13 +233,13 @@ function buildRoadmap(){
     const stepEls=[];
     p.t.forEach(name=>{
       step++; const s=step; const hasContent = !!CONTENT[s];
-      const row=document.createElement("div");
+      const row=document.createElement("a");
       row.className="stop"+(done.has(s)?" done":""); row.dataset.step=s;
+      row.href="#/t/"+s; row.target="_blank"; row.rel="noopener";
       row.innerHTML='<span class="stepno">'+String(s).padStart(3,"0")+'</span>'+
         '<span class="tname">'+name+(hasContent?'<span class="ready">READ</span>':'')+'</span>'+
         '<span class="check" title="Mark cleared">'+tick+'</span>';
-      row.addEventListener("click", ()=> { location.hash = "#/t/"+s; });
-      row.querySelector(".check").addEventListener("click", (e)=>{ e.stopPropagation(); toggle(s,row); });
+      row.querySelector(".check").addEventListener("click", (e)=>{ e.preventDefault(); e.stopPropagation(); toggle(s,row); });
       stops.appendChild(row); stepEls.push({s,row});
     });
     body.appendChild(head); body.appendChild(stops);
@@ -282,6 +282,12 @@ document.getElementById("reset").addEventListener("click",()=>{
   if(!confirm("Clear all progress?")) return; done.clear();
   document.querySelectorAll(".stop").forEach(r=>{r.classList.remove("done"); applyFilterToRow(r);});
   updateStats(); save();
+});
+window.addEventListener("storage",(e)=>{
+  if(e.key!==KEY) return;
+  load();
+  document.querySelectorAll(".stop").forEach(r=>{ r.classList.toggle("done", done.has(+r.dataset.step)); applyFilterToRow(r); });
+  updateStats();
 });
 
 const vRoad=document.getElementById("view-roadmap");
